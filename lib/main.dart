@@ -3,6 +3,7 @@ import 'package:flutter_auth/Screens/Welcome/welcome_screen.dart';
 import 'package:flutter_auth/constants.dart';
 import 'package:flutter_auth/Screens/Login/login_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_auth/pages/admin/pet/page.dart';
 
 //void main() => runApp(MyApp());
 Future<void> main() async {
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
         primaryColor: kPrimaryColor,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: WelcomeScreen(),
+      //home: WelcomeScreen(),
+      home: PetPage(),
     );
   }
 }
