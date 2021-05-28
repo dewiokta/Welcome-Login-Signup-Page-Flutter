@@ -70,6 +70,28 @@ class DbHelper {
     )
     ''');
 
+    await db.execute('''
+    CREATE TABLE transaksi (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nama TEXT,
+      alamat TEXT,
+      email TEXT,
+      qty INTEGER,
+      total_price INTEGER
+    )
+    ''');
+
+    await db.execute('''
+    CREATE TABLE booking (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nama TEXT,
+      pet_name TEXT,
+      email TEXT,
+      jenis_hewan TEXT,
+      jenis_grooming TEXT
+    )
+    ''');
+
     await db.execute(
         'INSERT INTO pet (nama, gambar, detail, price, stok) VALUES ("Kucing", "https://picture-origin.rumah123.com/news-content/img/2020/12/15100751/Untitled-design-2020-12-15T100743.826.jpg", "Persian Cat", 2000000, 5)');
     await db.execute(
