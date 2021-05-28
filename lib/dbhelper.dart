@@ -1,11 +1,11 @@
 import 'package:flutter_auth/model/pet.dart';
 import 'package:flutter_auth/model/petfood.dart';
+import 'package:flutter_auth/model/accessories.dart';
+import 'package:flutter_auth/model/history.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'dart:io';
-
-import 'model/accessories.dart';
 
 class DbHelper {
   static DbHelper _dbHelper;
@@ -24,6 +24,7 @@ class DbHelper {
     await db.execute('DROP TABLE IF EXISTS pet');
     await db.execute('DROP TABLE IF EXISTS petfood');
     await db.execute('DROP TABLE IF EXISTS accessories');
+    await db.execute('DROP TABLE IF EXISTS history');
 
     await db.execute('''
     CREATE TABLE pet (
@@ -58,16 +59,27 @@ class DbHelper {
     )
     ''');
 
-    await db.execute(
-        'INSERT INTO pet (nama, image, detail, price, stok) VALUES ("Kucing", "https://picture-origin.rumah123.com/news-content/img/2020/12/15100751/Untitled-design-2020-12-15T100743.826.jpg", "Persian Cat", 2000000, 5)');
-    await db.execute(
-        'INSERT INTO pet (nama, image, detail, price, stok) VALUES ("Hamster", "https://ilmubudidaya.com/wp-content/uploads/2017/11/jenis-hamster-campbell.jpg", "Campbell Hamster", 40000, 10)');
+    await db.execute('''
+    CREATE TABLE history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nama TEXT,
+      alamat TEXT,
+      email TEXT,
+      dibeli TEXT,
+      price INTEGER
+    )
+    ''');
 
     await db.execute(
-        'INSERT INTO petfood (nama, image, detail, price, stok) VALUES ("Whiskas Tuna", "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full/whiskas_whiskas-adult-tuna-makanan-kucing--480-g-_full01.jpg", "cat food | adult (480 g)", 30000, 20)');
+        'INSERT INTO pet (nama, gambar, detail, price, stok) VALUES ("Kucing", "https://picture-origin.rumah123.com/news-content/img/2020/12/15100751/Untitled-design-2020-12-15T100743.826.jpg", "Persian Cat", 2000000, 5)');
+    await db.execute(
+        'INSERT INTO pet (nama, gambar, detail, price, stok) VALUES ("Hamster", "https://ilmubudidaya.com/wp-content/uploads/2017/11/jenis-hamster-campbell.jpg", "Campbell Hamster", 40000, 10)');
 
     await db.execute(
-        'INSERT INTO accessories (nama, image, detail, price, stok) VALUES ("Bell Necklace", "https://img.alicdn.com/imgextra/i3/3338141730/TB2A3wnaI2vU1JjSZFwXXX2cpXa_!!3338141730.jpg_460x460q90.jpg", "for cat or dog", 30000, 15)');
+        'INSERT INTO petfood (nama, gambar, detail, price, stok) VALUES ("Whiskas Tuna", "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full/whiskas_whiskas-adult-tuna-makanan-kucing--480-g-_full01.jpg", "cat food | adult (480 g)", 30000, 20)');
+
+    await db.execute(
+        'INSERT INTO accessories (nama, gambar, detail, price, stok) VALUES ("Bell Necklace", "https://img.alicdn.com/imgextra/i3/3338141730/TB2A3wnaI2vU1JjSZFwXXX2cpXa_!!3338141730.jpg_460x460q90.jpg", "for cat or dog", 30000, 15)');
   }
 
   //select
@@ -86,6 +98,12 @@ class DbHelper {
   Future<List<Map<String, dynamic>>> selectAc() async {
     Database db = await this.initDb();
     var mapList = await db.query('accessories', orderBy: 'nama');
+    return mapList;
+  }
+
+  Future<List<Map<String, dynamic>>> selectHs() async {
+    Database db = await this.initDb();
+    var mapList = await db.query('history', orderBy: 'id');
     return mapList;
   }
 
@@ -170,6 +188,12 @@ class DbHelper {
     return count;
   }
 
+  Future<int> deleteHs(int id) async {
+    Database db = await this.initDb();
+    int count = await db.delete('history', where: 'id=?', whereArgs: [id]);
+    return count;
+  }
+
   //get list
   Future<List<Pet>> getItemList() async {
     var itemMapList = await select();
@@ -182,7 +206,7 @@ class DbHelper {
   }
 
   Future<List<Petfood>> getItemListFd() async {
-    var itemMapList = await select();
+    var itemMapList = await selectFd();
     int count = itemMapList.length;
     List<Petfood> itemList = List<Petfood>();
     for (int i = 0; i < count; i++) {
@@ -197,6 +221,16 @@ class DbHelper {
     List<Accessories> itemList = List<Accessories>();
     for (int i = 0; i < count; i++) {
       itemList.add(Accessories.fromMap(itemMapList[i]));
+    }
+    return itemList;
+  }
+
+  Future<List<History>> getItemListHs() async {
+    var itemMapList = await selectHs();
+    int count = itemMapList.length;
+    List<History> itemList = List<History>();
+    for (int i = 0; i < count; i++) {
+      itemList.add(History.fromMap(itemMapList[i]));
     }
     return itemList;
   }
